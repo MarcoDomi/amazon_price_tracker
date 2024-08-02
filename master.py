@@ -13,11 +13,25 @@ item = "https://www.amazon.com/ATHMILE-Quick-Dry-Barefoot-Exercise-Accessories/d
 amazon_webpage = requests.get(item, headers=header)
 soup = BeautifulSoup(amazon_webpage.text, "html.parser").body
 
-def get_newProduct_info(bs_obj):
-    product_name = bs_obj.css.select("#productTitle")[0].text
-    print(product_name)
-    list_price = bs_obj.css.select("span.a-size-small.aok-offscreen")
-    print(list_price)
+def get_product_title(bs_obj):
+    try:
+        item_title = soup.find("h1", {"id": "title"}).text.strip()
+    except:
+        item_title = None
 
-#get_newProduct_info(soup)
-print(soup.prettify())
+    return item_title
+
+def get_product_price(bs_object):
+    try:
+        p=soup.find("span",{"class":"a-price"}).span.text.strip()
+    except:
+        p=None
+
+    return p
+
+title = get_product_title(soup)
+price = get_product_price(soup)
+
+print(title, price)
+
+
