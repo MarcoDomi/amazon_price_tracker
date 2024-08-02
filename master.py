@@ -29,9 +29,8 @@ def get_product_price(bs_object):
 
     return p
 
-title = get_product_title(soup)
-price = get_product_price(soup)
+# title = get_product_title(soup)
+# price = get_product_price(soup)
 
-print(title, price)
-
-
+allimages = soup.find_all("div", {"class": "imgTagWrapperId"})
+print(len(allimages))
