@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import random
+import time
 
 useragents = [
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36",
@@ -55,6 +56,8 @@ def connect():
 def get_product_title(bs_obj):
     try:
         item_title = bs_obj.find("h1", {"id": "title"}).text.strip()
+        if len(item_title) > 25:
+            item_title = item_title[:25] + "..."
     except:
         item_title = None
 
@@ -74,6 +77,7 @@ def get_image(bs_obj):
         img_addr = images[0].find("img")["src"]
     except:
         img_addr = None
+
     return img_addr
 
 def get_rating(bs_obj):
@@ -81,21 +85,37 @@ def get_rating(bs_obj):
         rating = bs_obj.find("span", {"class": "a-icon-alt"}).text
     except:
         rating = None
+
     return rating
 
 def get_info():
     obj = {}
 
     obj["title"] = get_product_title(soup)
-    obj["price"] = get_price(soup)
     obj["image"] = get_image(soup)
+    obj["price"] = get_price(soup)
     obj["rating"] = get_rating(soup)
 
     return obj
 
+def output_info(obj):
+    f = open("products.txt", "w")
+    line = ""
+    for key in obj:
+        line += obj[key] + " "
+    
+    f.write(line + '\n')
+    f.close()
 
 
-resp = connect()
-soup = BeautifulSoup(resp.text, "html.parser").body
+while(True):
+    print("go")
+    resp = connect()
+    soup = BeautifulSoup(resp.text, "html.parser").body
 
-product_info = get_info()
+    product_info = get_info()
+    output_info(product_info)
+
+    seconds = random.randrange(5, 40)
+    time.sleep(seconds)
+    
