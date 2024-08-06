@@ -122,13 +122,10 @@ def output_info(obj):
         f.close()
 
 
-'''resp = connect(items[0])
-soup = BeautifulSoup(resp.text, "html.parser").body
-o = get_info(soup)
-print(o)'''
 
 while(True):
     print("go")
+    clear_file()
     for item in items:
         resp = connect(item)
         soup = BeautifulSoup(resp.text, "html.parser").body
