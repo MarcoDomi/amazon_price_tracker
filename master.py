@@ -45,7 +45,7 @@ header = {
     "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8",
 }
 
-items = [
+item_list = [
     "https://www.amazon.com/dp/1646091809/?coliid=I1R9351T70G1BR&colid=2F3AW09XJ6Z7S&psc=1&ref_=_sed_dp",
     "https://www.amazon.com/dp/1624650155/?coliid=IURSU0SKPC6YJ&colid=2F3AW09XJ6Z7S&psc=1&ref_=list_c_wl_gv_ov_lig_pi_dp",
     "https://www.amazon.com/HP-Students-Business-Quad-Core-Storage/dp/B0B2D77YB8/ref=sr_1_3?crid=AW0N7J626VW2&dib=eyJ2IjoiMSJ9.DPtOZwisQxLAXAf_kwR_161UU40DqEBUG-Ju057UXaDPU7mvyQL1dQdSw0VcrE9eZjB-FSNBPjs2k3d7nfeqOCqmG7r-GncabSJxAyKjHJ1tef_zILGpDagoX5F0cC1_RiSicVRU_BJYborbOzufN5InS807LFs_9dJAaXMWaReYkt4xwtesWSWed3K2mCOfvh1g0r90D6eZytlkh26xsAVR9oi5ugg6imqIZ4qtjy8.9DtrK2eO0ySrAeMZbTmdVP3PhHpuUfnQiSC9R5G-hxA&dib_tag=se&keywords=laptop&qid=1722726100&sprefix=laptop%2Caps%2C268&sr=8-3&th=1",
@@ -77,7 +77,7 @@ def get_price(bs_obj):
     try:
         p = bs_obj.css.select("#buyBoxAccordion")[0]
     except IndexError:
-        try:
+        try: #account for different html on some amazon pages with nested try except clause
             p = bs_obj.css.select(".a-section.a-spacing-none.a-padding-none")[0]
         except IndexError:
             return None
@@ -85,7 +85,8 @@ def get_price(bs_obj):
     price = p.find("span", {"class": "a-offscreen"}).text.strip()
     if price == "":
         price = p.find("span", {"class": "a-price"}).text.strip()
-
+        
+    price = float(price[1:]) #remove dollar sign and convert to float
     print(price)
     return price
 
@@ -130,15 +131,22 @@ def output_csv(product_list):
         for p in product_list:
             writer.writerow(p)
 
+master_prices = []
+def initialize_prices():
+    for item_url in item_list:
+        resp = connect(item_url)
+        soup = BeautifulSoup(resp.text, "html.parser")
 
 
-products = []
+def main():
+    products = []
 
-clear_file()
-for item in items:
-    resp = connect(item)
-    soup = BeautifulSoup(resp.text, "html.parser").body
-    products += [get_info(soup)]
-    time.sleep(random.randrange(6, 30))
+    for item_url in item_list:
+        resp = connect(item_url)
+        soup = BeautifulSoup(resp.text, "html.parser").body
+        products += [get_info(soup)]
+        time.sleep(random.randrange(6, 30))
+    clear_file()
+    output_csv(products)
 
-output_csv(products)
+main()
