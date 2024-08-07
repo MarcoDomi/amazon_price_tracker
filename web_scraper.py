@@ -63,7 +63,7 @@ def connect(url):
     return resp
 
 
-def get_product_title(bs_obj):
+def get_title(bs_obj):
     try:
         item_title = bs_obj.find("h1", {"id": "title"}).text.strip()
         if len(item_title) > 25:
@@ -77,7 +77,7 @@ def get_price(bs_obj):
     try:
         p = bs_obj.css.select("#buyBoxAccordion")[0]
     except IndexError:
-        try: #account for different html on some amazon pages with nested try except clause
+        try: #use nested try except clause to account for different html structure on different amazon pages
             p = bs_obj.css.select(".a-section.a-spacing-none.a-padding-none")[0]
         except IndexError:
             return None
@@ -85,7 +85,7 @@ def get_price(bs_obj):
     price = p.find("span", {"class": "a-offscreen"}).text.strip()
     if price == "":
         price = p.find("span", {"class": "a-price"}).text.strip()
-        
+
     price = float(price[1:]) #remove dollar sign and convert to float
     print(price)
     return price
@@ -107,16 +107,6 @@ def get_rating(bs_obj):
 
     return rating
 
-def get_info(page):
-    obj = {}
-
-    obj["title"] = get_product_title(page)
-    obj["image"] = get_image(page)
-    obj["price"] = get_price(page)
-    obj["rating"] = get_rating(page)
-
-    return obj
-
 def clear_file():
     with open('product_info.csv', 'w') as csv_file:
         csv_file.write("")
@@ -131,22 +121,22 @@ def output_csv(product_list):
         for p in product_list:
             writer.writerow(p)
 
-master_prices = []
-def initialize_prices():
-    for item_url in item_list:
-        resp = connect(item_url)
-        soup = BeautifulSoup(resp.text, "html.parser")
 
-
-def main():
+def get_product_info():
     products = []
 
     for item_url in item_list:
         resp = connect(item_url)
         soup = BeautifulSoup(resp.text, "html.parser").body
-        products += [get_info(soup)]
-        time.sleep(random.randrange(6, 30))
-    clear_file()
-    output_csv(products)
 
-main()
+        obj = {
+            "title": get_title(soup),
+            "image": get_image(soup),
+            "price": get_price(soup),
+            "rating": get_rating(soup),
+        }
+
+        products += [obj]
+        time.sleep(random.randrange(6, 30))
+    
+    return products
