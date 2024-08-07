@@ -75,11 +75,19 @@ def get_product_title(bs_obj):
 
 def get_price(bs_obj):
     try:
-        p = bs_obj.find("span", {"class": "a-price"}).span.text.strip()
-    except:
-        p=None
-    print(p)
-    return p
+        p = bs_obj.css.select("#buyBoxAccordion")[0]
+    except IndexError:
+        try:
+            p = bs_obj.css.select(".a-section.a-spacing-none.a-padding-none")[0]
+        except IndexError:
+            return None
+
+    price = p.find("span", {"class": "a-offscreen"}).text.strip()
+    if price == "":
+        price = p.find("span", {"class": "a-price"}).text.strip()
+
+    print(price)
+    return price
 
 def get_image(bs_obj):
     try:
@@ -121,6 +129,8 @@ def output_csv(product_list):
         writer.writeheader()
         for p in product_list:
             writer.writerow(p)
+
+
 
 products = []
 
