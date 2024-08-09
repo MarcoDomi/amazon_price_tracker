@@ -134,6 +134,7 @@ def get_product_info():
             "image": get_image(soup),
             "price": get_price(soup),
             "rating": get_rating(soup),
+            "url": item_url
         }
 
         products += [obj]
