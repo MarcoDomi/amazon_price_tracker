@@ -114,7 +114,7 @@ def clear_file():
 
 def output_csv(product_list):
     with open("product_info.csv", "a") as csv_file:
-        fieldnames = ["title", "image", "price", "rating"]
+        fieldnames = ["title", "image", "price", "rating", "url"]
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
 
         writer.writeheader()
