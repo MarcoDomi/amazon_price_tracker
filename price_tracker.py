@@ -10,10 +10,8 @@ def send_email(discount_list):
     subject = "Amazon Discount alert"
     body = ""
     for item in discount_list:
-        #body += f"{item['title']} - ${item['price']} - {item['rating']}\n{item['url']}\n\n"
-        body += f"{item['title']} - {item['price']}\n{item['url']}\n\n"
+        body += f"{item['title']} - ${item['price']} - {item['rating']}\n{item['url']}\n\n"
         
-
     text = f"subject: {subject}\n\n{body}"
     server = smtplib.SMTP("smtp.gmail.com", 587)
     server.starttls()
