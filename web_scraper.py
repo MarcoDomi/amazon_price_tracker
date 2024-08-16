@@ -111,7 +111,7 @@ def get_rating(bs_obj):
 
     return rating
 
-def clear_file():
+def clear_csv():
     with open('product_info.csv', 'w') as csv_file:
         csv_file.write("")
 

@@ -29,6 +29,7 @@ def get_discount(master_price, current_price):
 
 def get_discounted_products(current_products):
     discounted_products = []
+    nonDiscount_products = []
     with open("product_info.csv","r") as csv_file:
         product_index = 0
 
@@ -41,28 +42,30 @@ def get_discounted_products(current_products):
                 current_price = float(current_product["price"])
                 if get_discount(master_price, current_price) > 10.0:
                     discounted_products += [current_product]
+                else:
+                    nonDiscount_products += [current_product]
             except:
                 print(f"current product price is none")
 
             product_index += 1
 
-    return discounted_products
+    return discounted_products, nonDiscount_products
 
 
 if __name__ == "__main__":
     # current_products = web_scraper.get_product_info()
     # discount_list = get_discounted_products(current_products)
 
-    temp = [
+    test_scraped_data = [
         {
             "title": "item1",
-            "price": "1.75",
+            "price": "21.75",
             "rating": "4.5",
             "url": "https://www.amazon.com/dp/1646091809/?coliid=I1R9351T70G1BR&colid=2F3AW09XJ6Z7S&psc=1&ref_=_sed_dp",
         },
         {
             "title": "item2",
-            "price": "17.29",
+            "price": "39.29",
             "rating": "3.5",
             "url": "https://www.amazon.com/dp/1624650155/?coliid=IURSU0SKPC6YJ&colid=2F3AW09XJ6Z7S&psc=1&ref_=list_c_wl_gv_ov_lig_pi_dp",
         },
@@ -74,12 +77,18 @@ if __name__ == "__main__":
         },
         {
             "title": "item4",
-            "price": "11.19",
+            "price": "34.19",
             "rating": "3.8",
             "url": "https://www.amazon.com/Neuromancer-William-Gibson/dp/0441007465/ref=sr_1_1?crid=369LZU17TQY1T&dib=eyJ2IjoiMSJ9.ArlChDCsKlOJy77lHBKtdqgVGLQyBiIWhiuMJDlV78yK4gG4tMY1z1L_LUpfjmHBX6EX5Jk-NsEMlYlSqBGhGeRaQjZE1H6zcxs1Vsilca7XsCL0Y15IpZE9TsPw3SA7-UPwELkgFje5_GqnW5eVq0D8iEUl6bHrAc7KWwHOBqmHtsou911CX4v5O6yiFoFByMObIuVtYOCQTpX7AtGtGwhUDjsx64_MXwwfpb95QFs.1V3YM80cWLbyiFvAcIR993jEzUNIHTCVA9SKsQsvz7Q&dib_tag=se&keywords=neuromancer&qid=1722726143&sprefix=neuromance%2Caps%2C139&sr=8-1",
         },
     ]
-    discount_list = get_discounted_products(temp)
+    discount_list,nonDiscount_list = get_discounted_products(test_scraped_data)
+    print(len(discount_list))
+    print(len(nonDiscount_list))
+
+    if len(nonDiscount_list) > 0:
+        web_scraper.clear_csv()
+        web_scraper.output_csv(nonDiscount_list)
 
     if len(discount_list) > 0:
         send_email(discount_list)
