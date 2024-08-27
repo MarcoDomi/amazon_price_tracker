@@ -65,14 +65,14 @@ def connect(url):
 
 def get_title(bs_obj):
     try:
-        item_title = bs_obj.find("span", {"id": "productTitle"}).text.strip()
+        item_title = bs_obj.find("span", {"id": "productTitle"}).text.strip() 
         if len(item_title) > 25:
             item_title = item_title[:25] + "..."
     except:
         item_title = None
-
+    # if first css selector failed try this one
     if item_title == None:
-        item_title = bs_obj.css.select("h1#title.a-spacing-none.a-text-normal")
+        item_title = bs_obj.css.select("h1#title.a-spacing-none.a-text-normal") 
         print(item_title)
 
     return item_title
@@ -128,7 +128,7 @@ def output_csv(product_list):
 
 def get_product_info():
     products = []
-
+    #make connection for each url in item_list
     for item_url in item_list:
         resp = connect(item_url)
         soup = BeautifulSoup(resp.text, "html.parser").body
