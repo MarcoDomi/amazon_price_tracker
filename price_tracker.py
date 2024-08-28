@@ -18,7 +18,7 @@ def send_email(discount_list):
     server = smtplib.SMTP("smtp.gmail.com", 587) 
     server.starttls()
 
-    server.login(email, "nnxx zmwe kdft qkpv")
+    server.login(email, "")
     server.sendmail(email, receiver, text)
 
 
