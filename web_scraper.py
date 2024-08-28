@@ -58,51 +58,33 @@ def connect(url):
 
 def get_title(bs_obj):
     try:
-        item_title = bs_obj.find("span", {"id": "productTitle"}).text.strip() 
+        item_title = bs_obj.find("h1", {"class": "p_name"}).text.strip() 
         if len(item_title) > 25:
             item_title = item_title[:25] + "..."
     except:
         item_title = None
     # if first css selector failed try this one
-    if item_title == None:
-        item_title = bs_obj.css.select("h1#title.a-spacing-none.a-text-normal") 
-        print(item_title)
+    
 
     return item_title
 
 def get_price(bs_obj):
     try:
-        p = bs_obj.css.select("#buyBoxAccordion")[0]
-    except IndexError:
-        try: #use nested try except clause to account for different html structure on different amazon pages
-            p = bs_obj.css.select(".a-section.a-spacing-none.a-padding-none")[0]
-        except IndexError:
-            return None
+        price = bs_obj.find("span", {"class": "price_val"}).text.strip()
+    except:
+        return None
 
-    price = p.find("span", {"class": "a-offscreen"}).text.strip()
-    if price == "":
-        price = p.find("span", {"class": "a-price"}).text.strip()
-
-    price = float(price[1:]) #remove dollar sign and convert to float
     print(price)
-    return price
+    return float(price)  
 
 def get_image(bs_obj):
     try:
-        images = bs_obj.find_all("div", {"class": "imgTagWrapper"})
+        images = bs_obj.find_all("div", {"id": "main-img"})
         img_addr = images[0].find("img")["src"]
     except:
         img_addr = None
 
     return img_addr
-
-def get_rating(bs_obj):
-    try:
-        rating = bs_obj.find("span", {"class": "a-icon-alt"}).text
-    except:
-        rating = None
-
-    return rating
 
 def clear_csv():
     with open('product_info.csv', 'w') as csv_file:
@@ -111,7 +93,7 @@ def clear_csv():
 
 def output_csv(product_list):
     with open("product_info.csv", "a") as csv_file:
-        fieldnames = ["title", "image", "price", "rating", "url"]
+        fieldnames = ["title", "image", "price", "url"]
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
 
         writer.writeheader()
@@ -123,7 +105,6 @@ def read_url_file():
         url_list = [url.strip('\n') for url in url_file]
 
     return url_list
-
 
 
 def get_product_info():
@@ -143,7 +124,6 @@ def get_product_info():
             "title": get_title(soup),
             "image": get_image(soup),
             "price": get_price(soup),
-            "rating": get_rating(soup),
             "url": item_url
         }
 
