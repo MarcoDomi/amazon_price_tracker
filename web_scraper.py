@@ -118,9 +118,22 @@ def output_csv(product_list):
         for p in product_list:
             writer.writerow(p)
 
+def read_url_file():
+    with open('item_urls.txt') as url_file:
+        url_list = [url.strip('\n') for url in url_file]
 
-def get_product_info(url_list):
+    return url_list
+
+
+
+def get_product_info():
     products = []
+
+    url_list = read_url_file()
+    if(len(url_list) == 0):
+        print('list is empty')
+        exit(1)
+
     #make connection for each url in url_list
     for item_url in url_list:
         resp = connect(item_url)
